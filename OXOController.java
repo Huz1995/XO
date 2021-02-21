@@ -18,21 +18,22 @@ class OXOController
     }
 
     public void handleIncomingCommand(String command) throws OXOMoveException
-    {   
-        
-        validateCell(command);
-        gameModel.setCellOwner(y(command), x(command), gameModel.getCurrentPlayer());
-        System.out.println(this.rightDiag(gameModel.getCurrentPlayer(), y(command), x(command))); 
-        if(this.winCheck(gameModel.getCurrentPlayer(),y(command),x(command))) 
-        {
-            gameModel.setWinner(gameModel.getCurrentPlayer());
+    {       
+        if(!gameModel.isGameDrawn() && gameModel.getWinner()==null) {
+            validateCell(command);
+            gameModel.setCellOwner(y(command), x(command), gameModel.getCurrentPlayer());
+    
+            if(this.winCheck(gameModel.getCurrentPlayer(),y(command),x(command))) 
+            {
+                gameModel.setWinner(gameModel.getCurrentPlayer());
+            }
+            if(this.hasDrawn()) 
+            {
+             gameModel.setGameDrawn();;
+            }
+            
+            this.nextTurn();
         }
-        if(this.hasDrawn()) 
-        {
-        gameModel.setGameDrawn();;
-        }
-        
-        this.nextTurn();
     }
 
     private void nextTurn() 
@@ -115,9 +116,10 @@ class OXOController
         boolean horizontal = horizontalWin(currentPlayer, playerRowNum),
                 vertical= verticalWin(currentPlayer, playerColNum), 
                 leftDiag = leftDiag(currentPlayer, playerRowNum, playerColNum),
+                rightDiag = rightDiag(currentPlayer, playerRowNum, playerColNum),
                 hasWon = false;
 
-                if(horizontal||vertical||leftDiag) {hasWon=true;}
+                if(horizontal||vertical||leftDiag||rightDiag) {hasWon=true;}
 
         return hasWon;
     }
@@ -211,16 +213,16 @@ class OXOController
         boolean rightDiagWin = false;
         
 
-        while(startingX < numRows-1 && startingY > 0) {
+        while(startingX < numCols-1 && startingY > 0) {
             startingX = startingX + 1;
             startingY = startingY - 1;
         }
         
-        for(int j = startingY,i =startingX; j<=numRows-winThresh && i<=numCols-winThresh; j++,i--) {
+        for(int j = startingY,i =startingX; j<=numRows-winThresh && i>=winThresh-1; j++,i--) {
             if(gameModel.getCellOwner(j, i)==currentPlayer) {
                 int counter = 1;
                 int streak = 1;
-                int cellRowNum = j+1, cellColNum = i+1;
+                int cellRowNum = j+1, cellColNum = i-1;
                 while(counter < winThresh) {
                     if(gameModel.getCellOwner(cellRowNum, cellColNum)==currentPlayer) {
                         streak++;
@@ -233,6 +235,9 @@ class OXOController
             }
         }
         return rightDiagWin;
+       
     }
+
+    
 }
 
