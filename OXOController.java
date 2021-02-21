@@ -22,7 +22,7 @@ class OXOController
         
         validateCell(command);
         gameModel.setCellOwner(y(command), x(command), gameModel.getCurrentPlayer());
-        
+        System.out.println(this.rightDiag(gameModel.getCurrentPlayer(), y(command), x(command))); 
         if(this.winCheck(gameModel.getCurrentPlayer(),y(command),x(command))) 
         {
             gameModel.setWinner(gameModel.getCurrentPlayer());
@@ -113,10 +113,11 @@ class OXOController
     private boolean winCheck(OXOPlayer currentPlayer, int playerRowNum, int playerColNum) {
         
         boolean horizontal = horizontalWin(currentPlayer, playerRowNum),
-                vertical=verticalWin(currentPlayer, playerColNum), 
+                vertical= verticalWin(currentPlayer, playerColNum), 
+                leftDiag = leftDiag(currentPlayer, playerRowNum, playerColNum),
                 hasWon = false;
 
-                if(horizontal||vertical) {hasWon=true;}
+                if(horizontal||vertical||leftDiag) {hasWon=true;}
 
         return hasWon;
     }
@@ -170,6 +171,68 @@ class OXOController
         return verticalWin;
     }
 
+    private boolean leftDiag(OXOPlayer currentPlayer, int playerRowNum, int playerColNum) {
 
+        int startingX = playerColNum, startingY = playerRowNum;
+        int numRows = gameModel.getNumberOfRows(), numCols = gameModel.getNumberOfColumns();
+        int winThresh = gameModel.getWinThreshold();
+        boolean leftDiagWin = false;
+        
 
+        while(startingX > 0 && startingY > 0) {
+            startingX = startingX - 1;
+            startingY = startingY - 1;
+        }
+        
+        for(int j = startingY,i =startingX; j<=numRows-winThresh && i<=numCols-winThresh; j++,i++) {
+            if(gameModel.getCellOwner(j, i)==currentPlayer) {
+                int counter = 1;
+                int streak = 1;
+                int cellRowNum = j+1, cellColNum = i+1;
+                while(counter < winThresh) {
+                    if(gameModel.getCellOwner(cellRowNum, cellColNum)==currentPlayer) {
+                        streak++;
+                    }
+                    cellRowNum++;
+                    cellColNum++;
+                    counter++;
+                }
+                if(streak==winThresh) {leftDiagWin = true;}
+            }
+        }
+        return leftDiagWin;
+    }
+
+    private boolean rightDiag(OXOPlayer currentPlayer, int playerRowNum, int playerColNum) {
+
+        int startingX = playerColNum, startingY = playerRowNum;
+        int numRows = gameModel.getNumberOfRows(), numCols = gameModel.getNumberOfColumns();
+        int winThresh = gameModel.getWinThreshold();
+        boolean rightDiagWin = false;
+        
+
+        while(startingX < numRows-1 && startingY > 0) {
+            startingX = startingX + 1;
+            startingY = startingY - 1;
+        }
+        
+        for(int j = startingY,i =startingX; j<=numRows-winThresh && i<=numCols-winThresh; j++,i--) {
+            if(gameModel.getCellOwner(j, i)==currentPlayer) {
+                int counter = 1;
+                int streak = 1;
+                int cellRowNum = j+1, cellColNum = i+1;
+                while(counter < winThresh) {
+                    if(gameModel.getCellOwner(cellRowNum, cellColNum)==currentPlayer) {
+                        streak++;
+                    }
+                    cellRowNum++;
+                    cellColNum--;
+                    counter++;
+                }
+                if(streak==winThresh) {rightDiagWin = true;}
+            }
+        }
+        return rightDiagWin;
+    }
 }
+
