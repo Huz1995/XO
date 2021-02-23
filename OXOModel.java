@@ -105,6 +105,4 @@ class OXOModel
         return players.indexOf(getCurrentPlayer());
     }
 
-  
-
 }

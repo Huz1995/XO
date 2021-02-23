@@ -18,20 +18,19 @@ class OXOController
     }
 
     public void handleIncomingCommand(String command) throws OXOMoveException
-    {       
+    {    
+
         if(!gameModel.isGameDrawn() && gameModel.getWinner()==null) {
             validateCell(command);
             gameModel.setCellOwner(y(command), x(command), gameModel.getCurrentPlayer());
-    
             if(this.winCheck(gameModel.getCurrentPlayer(),y(command),x(command))) 
             {
                 gameModel.setWinner(gameModel.getCurrentPlayer());
             }
             if(this.hasDrawn()) 
             {
-             gameModel.setGameDrawn();;
+                gameModel.setGameDrawn();
             }
-            
             this.nextTurn();
         }
     }
@@ -237,7 +236,6 @@ class OXOController
         return rightDiagWin;
        
     }
-
     
 }
 

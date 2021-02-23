@@ -9,7 +9,8 @@ public class CellAlreadyTakenException extends OXOMoveException{
 
 
     public String toString() {
-        return "This cell has already been taken";
+        return "The cell: " + (char) (getRow() + 97) + (getColumn()+1) + 
+                " has already been taken";
     }
 
 }
